@@ -1,0 +1,77 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "b72a1d02-f3c2-4c7d-9fcc-0addd92156cc",
+    "name": "process-sass-files",
+    "friendlyName": "process-sass-files",
+    "description": "Compile sass files to css and add vendor prefixes",
+    "helpMarkDown": "",
+    "category": "Utility",
+    "author": "beingnin",
+    "version": {
+        "Major": 0,
+        "Minor": 0,
+        "Patch": 2
+    },
+    "instanceNameFormat": "Compile sass",
+    "groups": [
+        {
+            "displayName": "Advanced",
+            "name": "advanced",
+            "isExpanded": false
+        }
+    ],
+    "inputs": [
+        {
+            "name": "inputFile",
+            "type": "string",
+            "label": "Full path of the sass file",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "You can use pipeline variables in here. For example: **$(Build.SourcesDirectory)\\content\\styles\theme.scss**"
+        },
+        {
+            "name": "outputFile",
+            "type": "string",
+            "label": "Full path of the css file to be generated",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "You can use pipeline variables in here. For example: **$(Build.SourcesDirectory)\\content\\styles\\theme.css**"
+        },
+        {
+            "name": "style",
+            "type": "radio",
+            "label": "How do you want the compiled css to be?",
+            "options": {
+                "expanded":"normal",
+                "compressed":"minified"
+            },
+            "defaultValue": "expanded",
+            "required": true,
+            "groupName": "advanced",
+            "helpMarkDown": "Select **minified** to compress the css"
+        },  
+        {
+            "name": "enableVendorPrefixing",
+            "type": "boolean",
+            "label": "Add vendor prefixes",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "advanced",
+            "helpMarkDown": "If checked vendor prefixes will be added to the compiled css"
+        },
+        {
+            "name": "workingDirectory",
+            "type": "string",
+            "label": "The working directory where dart-sass is installed",
+            "defaultValue": "",
+            "required": false,
+            "groupName": "advanced",
+            "helpMarkDown": "Leave this field in case dart-sass in available from **path** variable"
+        }
+    ],
+    "execution": {
+        "Node10": {
+            "target": "index.js"
+        }
+    }
+}
