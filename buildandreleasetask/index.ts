@@ -1,5 +1,4 @@
 import tl = require('azure-pipelines-task-lib/task');
-import { async } from 'q';
 const { spawn } = require("child_process");
 
 async function compile(input: string, output: string, style: string, enableVendorPrefixing: boolean, workingDirectory: string) {
