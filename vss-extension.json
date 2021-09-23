@@ -2,8 +2,8 @@
     "manifestVersion": 1,
     "id": "process-sass-files",
     "name": "Process sass files",
-    "version": "0.0.2",
-    "publisher": "beingnin",
+    "version": "0.0.3",
+    "publisher": "AdventureWorks",
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"

@@ -35,7 +35,7 @@ function compile(input, output, style, enableVendorPrefixing, workingDirectory) 
             if (code == 0 && enableVendorPrefixing) {
                 const options2 = {
                     cwd: undefined,
-                    shell: false
+                    shell: true
                 };
                 const prefixer = spawn("autoprefixer-cli", ['-o', output, output], options2);
                 prefixer.stdout.on("data", (data) => {

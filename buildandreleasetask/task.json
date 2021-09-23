@@ -6,11 +6,11 @@
     "description": "Compile sass files to css and add vendor prefixes",
     "helpMarkDown": "",
     "category": "Utility",
-    "author": "beingnin",
+    "author": "Nithin.bc",
     "version": {
         "Major": 0,
         "Minor": 0,
-        "Patch": 2
+        "Patch": 3
     },
     "instanceNameFormat": "Compile sass",
     "groups": [
