@@ -49,7 +49,7 @@
             "required": true,
             "groupName": "advanced",
             "helpMarkDown": "Select **minified** to compress the css"
-        },  
+        },
         {
             "name": "enableVendorPrefixing",
             "type": "boolean",
