@@ -2,15 +2,15 @@
     "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
     "id": "b72a1d02-f3c2-4c7d-9fcc-0addd92156cc",
     "name": "process-sass-files",
-    "friendlyName": "process-sass-files",
+    "friendlyName": "Process sass files",
     "description": "Compile sass files to css and add vendor prefixes",
     "helpMarkDown": "",
     "category": "Utility",
-    "author": "Nithin.bc",
+    "author": "beingnin",
     "version": {
         "Major": 0,
         "Minor": 0,
-        "Patch": 3
+        "Patch": 4
     },
     "instanceNameFormat": "Compile sass",
     "groups": [
@@ -42,8 +42,8 @@
             "type": "radio",
             "label": "How do you want the compiled css to be?",
             "options": {
-                "expanded":"normal",
-                "compressed":"minified"
+                "expanded":"Normal",
+                "compressed":"Minified"
             },
             "defaultValue": "expanded",
             "required": true,
@@ -54,19 +54,28 @@
             "name": "enableVendorPrefixing",
             "type": "boolean",
             "label": "Add vendor prefixes",
-            "defaultValue": "",
+            "defaultValue": false,
             "required": true,
             "groupName": "advanced",
             "helpMarkDown": "If checked vendor prefixes will be added to the compiled css"
         },
         {
-            "name": "workingDirectory",
+            "name": "workingDirectorySass",
             "type": "string",
             "label": "The working directory where dart-sass is installed",
             "defaultValue": "",
             "required": false,
             "groupName": "advanced",
-            "helpMarkDown": "Leave this field in case dart-sass in available from **path** variable"
+            "helpMarkDown": "Leave this field in case dart-sass is available from **Path** variable"
+        },
+        {
+            "name": "workingDirectoryPrefixer",
+            "type": "string",
+            "label": "The working directory where autoprefixer-cli is installed",
+            "defaultValue": "",
+            "required": false,
+            "groupName": "advanced",
+            "helpMarkDown": "Leave this field in case autoprefixer-cli is available from **Path** variable"
         }
     ],
     "execution": {

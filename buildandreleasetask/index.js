@@ -10,45 +10,49 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const tl = require("azure-pipelines-task-lib/task");
-const { spawn } = require("child_process");
-function compile(input, output, style, enableVendorPrefixing, workingDirectory) {
+const process = require("child_process");
+function compile(input, output, style, enableVendorPrefixing, workingDirectorySass, workingDirectoryPrefixer) {
     return __awaiter(this, void 0, void 0, function* () {
         const options = {
-            cwd: workingDirectory,
+            cwd: workingDirectorySass,
             shell: true
         };
-        console.log(options);
-        console.log('enableVendorPrefixing:', enableVendorPrefixing);
-        const sass = spawn("sass", [input, output, (style === 'minified' ? '--style compressed' : '--style expanded'), '--no-source-map'], options);
+        const sass = process.spawn("sass", [input, output, (style === 'compressed' ? '--style compressed' : '--style expanded'), '--no-source-map'], options);
         sass.stdout.on("data", (data) => {
-            console.log(`stdout: ${data}`);
+            console.log(`sass stdout: ${data}`);
         });
         sass.stderr.on("data", (data) => {
-            console.log(`stderr: ${data}`);
+            console.log(`sass stderr: ${data}`);
         });
         sass.on('error', (error) => {
-            console.error(`error: ${error.message}`);
+            console.error(`sass error: ${error.message}`);
         });
         sass.on("close", (code) => {
             console.log(`sass exited with code ${code}`);
+            if (code != 0) {
+                throw new Error('Sass compiler exited with code ' + code);
+            }
             //start vendor prefixing
-            if (code == 0 && enableVendorPrefixing) {
+            if (enableVendorPrefixing) {
                 const options2 = {
-                    cwd: undefined,
+                    cwd: workingDirectoryPrefixer,
                     shell: true
                 };
-                const prefixer = spawn("autoprefixer-cli", ['-o', output, output], options2);
+                const prefixer = process.spawn("autoprefixer-cli", ['-o', output, output], options2);
                 prefixer.stdout.on("data", (data) => {
-                    console.log(`stdout: ${data}`);
+                    console.log(`autoprefixer stdout: ${data}`);
                 });
                 prefixer.stderr.on("data", (data) => {
-                    console.log(`stderr: ${data}`);
+                    console.log(`autoprefixer stderr: ${data}`);
                 });
                 prefixer.on('error', (error) => {
-                    console.error(`error: ${error.message}`);
+                    console.error(`autoprefixer error: ${error.message}`);
                 });
                 prefixer.on("close", (code) => {
                     console.log(`autoprefixer exited with code ${code}`);
+                    if (code != 0) {
+                        throw new Error('Autoprefixer exited with code ' + code);
+                    }
                 });
             }
         });
@@ -57,18 +61,12 @@ function compile(input, output, style, enableVendorPrefixing, workingDirectory) 
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let inputFile = tl.getInput('inputFile');
-            let outputFile = tl.getInput('outputFile');
-            let workingDirectory = tl.getInput('workingDirectory');
-            let style = tl.getInput('style');
-            let enableVendorPrefixing = tl.getBoolInput('enableVendorPrefixing');
-            //tests
-            workingDirectory = "C:\\Users\\nithin.bc\\Downloads\\dart-sass";
-            inputFile = '"D:\\Sources\\ADS\\Pilot Run\\SHJSP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_base.scss"';
-            outputFile = '"C:\\Users\\nithin.bc\\Desktop\\theme.css"';
-            style = 'minified';
-            enableVendorPrefixing = true;
-            //tests
+            const inputFile = tl.getInput('inputFile');
+            const outputFile = tl.getInput('outputFile');
+            const workingDirectorySass = tl.getInput('workingDirectorySass');
+            const workingDirectoryPrefixer = tl.getInput('workingDirectoryPrefixer');
+            const style = tl.getInput('style');
+            const enableVendorPrefixing = tl.getBoolInput('enableVendorPrefixing');
             //validations
             if (!inputFile) {
                 tl.setResult(tl.TaskResult.Failed, 'Invalid input file');
@@ -78,8 +76,7 @@ function run() {
                 tl.setResult(tl.TaskResult.Failed, 'Invalid output location');
                 throw new Error('Invalid output location');
             }
-            yield compile(inputFile, outputFile, style, enableVendorPrefixing, workingDirectory);
-            console.log('Task completed successfully');
+            yield compile(inputFile, outputFile, style, enableVendorPrefixing, workingDirectorySass, workingDirectoryPrefixer);
         }
         catch (err) {
             tl.setResult(tl.TaskResult.Failed, err.message);

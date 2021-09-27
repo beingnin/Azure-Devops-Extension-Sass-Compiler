@@ -1,54 +1,63 @@
 import tl = require('azure-pipelines-task-lib/task');
-const { spawn } = require("child_process");
+import process = require("child_process");
 
-async function compile(input: string, output: string, style: string, enableVendorPrefixing: boolean, workingDirectory: string) {
+async function compile(input: string,
+    output: string,
+    style: string | undefined,
+    enableVendorPrefixing: boolean,
+    workingDirectorySass: string | undefined,
+    workingDirectoryPrefixer: string | undefined) {
 
 
     const options = {
-        cwd: workingDirectory,
+        cwd: workingDirectorySass,
         shell: true
     };
-    console.log(options);
-    console.log('enableVendorPrefixing:', enableVendorPrefixing);
-    const sass = spawn("sass", [input, output, (style === 'minified' ? '--style compressed' : '--style expanded'),'--no-source-map'], options);
+    const sass = process.spawn("sass", [input, output, (style === 'compressed' ? '--style compressed' : '--style expanded'), '--no-source-map'], options);
 
     sass.stdout.on("data", (data: any) => {
-        console.log(`stdout: ${data}`);
+        console.log(`sass stdout: ${data}`);
     });
 
     sass.stderr.on("data", (data: any) => {
-        console.log(`stderr: ${data}`);
+        console.log(`sass stderr: ${data}`);
     });
 
     sass.on('error', (error: any) => {
-        console.error(`error: ${error.message}`);
+        console.error(`sass error: ${error.message}`);
     });
 
     sass.on("close", (code: any) => {
         console.log(`sass exited with code ${code}`);
+        if (code != 0) {
+            throw new Error('Sass compiler exited with code ' + code)
+        }
         //start vendor prefixing
-        if (code == 0 && enableVendorPrefixing) {
+        if (enableVendorPrefixing) {
             const options2 = {
-                cwd: undefined,
+                cwd: workingDirectoryPrefixer,
                 shell: true
             };
 
-            const prefixer = spawn("autoprefixer-cli", ['-o', output, output],options2);
+            const prefixer = process.spawn("autoprefixer-cli", ['-o', output, output], options2);
 
             prefixer.stdout.on("data", (data: any) => {
-                console.log(`stdout: ${data}`);
+                console.log(`autoprefixer stdout: ${data}`);
             });
 
             prefixer.stderr.on("data", (data: any) => {
-                console.log(`stderr: ${data}`);
+                console.log(`autoprefixer stderr: ${data}`);
             });
 
             prefixer.on('error', (error: any) => {
-                console.error(`error: ${error.message}`);
+                console.error(`autoprefixer error: ${error.message}`);
             });
 
             prefixer.on("close", (code: any) => {
                 console.log(`autoprefixer exited with code ${code}`);
+                if (code != 0) {
+                    throw new Error('Autoprefixer exited with code ' + code)
+                }
             });
         }
     });
@@ -57,19 +66,12 @@ async function compile(input: string, output: string, style: string, enableVendo
 async function run() {
     try {
 
-        let inputFile: string | undefined = tl.getInput('inputFile');
-        let outputFile: string | undefined = tl.getInput('outputFile');
-        let workingDirectory: string | undefined = tl.getInput('workingDirectory');
-        let style: string | undefined = tl.getInput('style');
-        let enableVendorPrefixing: boolean | undefined = tl.getBoolInput('enableVendorPrefixing');
-
-        //tests
-        workingDirectory = "C:\\Users\\nithin.bc\\Downloads\\dart-sass";
-        inputFile = '"D:\\Sources\\ADS\\Pilot Run\\SHJSP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_base.scss"';
-        outputFile = '"C:\\Users\\nithin.bc\\Desktop\\theme.css"';
-        style = 'minified';
-        enableVendorPrefixing = true;
-        //tests
+        const inputFile: string | undefined = tl.getInput('inputFile');
+        const outputFile: string | undefined = tl.getInput('outputFile');
+        const workingDirectorySass: string | undefined = tl.getInput('workingDirectorySass');
+        const workingDirectoryPrefixer: string | undefined = tl.getInput('workingDirectoryPrefixer');
+        const style: string | undefined = tl.getInput('style');
+        const enableVendorPrefixing: boolean | undefined = tl.getBoolInput('enableVendorPrefixing');
 
 
 
@@ -83,9 +85,8 @@ async function run() {
             tl.setResult(tl.TaskResult.Failed, 'Invalid output location');
             throw new Error('Invalid output location');
         }
-        await compile(inputFile, outputFile, style, enableVendorPrefixing, workingDirectory);
+        await compile(inputFile, outputFile, style, enableVendorPrefixing, workingDirectorySass, workingDirectoryPrefixer);
 
-        console.log('Task completed successfully');
     }
     catch (err: any) {
         tl.setResult(tl.TaskResult.Failed, err.message);
