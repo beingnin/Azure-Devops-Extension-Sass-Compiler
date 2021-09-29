@@ -73,8 +73,9 @@ async function installIfNotExists(path: string, tool: string) {
             shell: true
         };
         try {
-            await spawn(`npm install ${tool}`, options2);
+            var install=await spawn(`npm install ${tool}`, options2);
             console.log(`latest ${tool} installed`);
+            console.log(install.toString());
         } catch (error) {
             console.log(`error occurred while trying to install ${tool}`);
             console.log(error);
@@ -90,15 +91,15 @@ async function run() {
         let style: string | undefined = tl.getInput('style');
         let enableVendorPrefixing: boolean | undefined = tl.getBoolInput('enableVendorPrefixing');
 
-        const _baseWorkingDirectory = 'D:\\Sources\\OS\\Agent\\_tools'
+        const _baseWorkingDirectory = '$(Agent.ToolsDirectory)'
         const _workingDirectorySass: string | undefined = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
         const _workingDirectoryPrefixer: string | undefined = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';
 
-        //tests: remove later
-        inputFile = 'D:\\Sources\\OS\\Agent\\stylesheets\\_base.scss';
-        outputFile = 'D:\\Sources\\OS\\Agent\\stylesheets\\core.css';
-        enableVendorPrefixing=false;
-        //tests
+        // //tests: remove later
+        // inputFile = 'D:\\Sources\\OS\\Agent\\stylesheets\\_base.scss';
+        // outputFile = 'D:\\Sources\\OS\\Agent\\stylesheets\\core.css';
+        // enableVendorPrefixing=true;
+        // //tests
 
         //validations
         if (!inputFile) {
