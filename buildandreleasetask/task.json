@@ -58,24 +58,6 @@
             "required": true,
             "groupName": "advanced",
             "helpMarkDown": "If checked vendor prefixes will be added to the compiled css"
-        },
-        {
-            "name": "workingDirectorySass",
-            "type": "string",
-            "label": "The working directory where dart-sass is installed",
-            "defaultValue": "",
-            "required": false,
-            "groupName": "advanced",
-            "helpMarkDown": "Leave this field in case dart-sass is available from **Path** variable"
-        },
-        {
-            "name": "workingDirectoryPrefixer",
-            "type": "string",
-            "label": "The working directory where autoprefixer-cli is installed",
-            "defaultValue": "",
-            "required": false,
-            "groupName": "advanced",
-            "helpMarkDown": "Leave this field in case autoprefixer-cli is available from **Path** variable"
         }
     ],
     "execution": {

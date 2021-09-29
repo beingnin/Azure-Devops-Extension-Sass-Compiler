@@ -1,5 +1,6 @@
 import tl = require('azure-pipelines-task-lib/task');
 import process = require("child_process");
+const spawn = require("await-spawn");
 
 async function compile(input: string,
     output: string,
@@ -9,72 +10,95 @@ async function compile(input: string,
     workingDirectoryPrefixer: string | undefined) {
 
 
+
+
+    //compile sass
     const options = {
         cwd: workingDirectorySass,
         shell: true
     };
-    const sass = process.spawn("sass", [input, output, (style === 'compressed' ? '--style compressed' : '--style expanded'), '--no-source-map'], options);
-
-    sass.stdout.on("data", (data: any) => {
-        console.log(`sass stdout: ${data}`);
-    });
-
-    sass.stderr.on("data", (data: any) => {
-        console.log(`sass stderr: ${data}`);
-    });
-
-    sass.on('error', (error: any) => {
-        console.error(`sass error: ${error.message}`);
-    });
-
-    sass.on("close", (code: any) => {
-        console.log(`sass exited with code ${code}`);
-        if (code != 0) {
-            throw new Error('Sass compiler exited with code ' + code)
+    try {
+        const sass = await spawn("sass", [input, output, (style === 'compressed' ? '--style compressed' : '--style expanded'), '--no-source-map'], options);
+        console.log(sass.toString());
+        console.log(`compiled sass file ${input} to ${output}`);
+    } catch (error: any) {
+        console.log(error.stdout.toString());
+        if (error.errorno !== 0) {
+            console.error('sass compilation thrown error');
+            throw new Error(error.stderr.toString());
         }
-        //start vendor prefixing
-        if (enableVendorPrefixing) {
-            const options2 = {
-                cwd: workingDirectoryPrefixer,
-                shell: true
-            };
-
-            const prefixer = process.spawn("autoprefixer-cli", ['-o', output, output], options2);
-
-            prefixer.stdout.on("data", (data: any) => {
-                console.log(`autoprefixer stdout: ${data}`);
-            });
-
-            prefixer.stderr.on("data", (data: any) => {
-                console.log(`autoprefixer stderr: ${data}`);
-            });
-
-            prefixer.on('error', (error: any) => {
-                console.error(`autoprefixer error: ${error.message}`);
-            });
-
-            prefixer.on("close", (code: any) => {
-                console.log(`autoprefixer exited with code ${code}`);
-                if (code != 0) {
-                    throw new Error('Autoprefixer exited with code ' + code)
-                }
-            });
+    }
+    //add vendor prefixes if asked by user
+    if (enableVendorPrefixing) {
+        const options2 = {
+            cwd: workingDirectoryPrefixer,
+            shell: true
+        };
+        try {
+            const prefixer = await spawn("autoprefixer-cli", ['-o', output, output], options2);
+            console.log(prefixer.toString());
+            console.log(`vendor prefixes added in ${output}`);
+        } catch (error: any) {
+            console.log(error.stdout.toString());
+            if (error.errorno !== 0) {
+                console.error('vendor prefixing thrown error');
+                throw new Error(error.stderr.toString());
+            }
         }
-    });
+    }
+
 }
+async function installIfNotExists(path: string, tool: string) {
+    const options = {
+        cwd: path + '\\node_modules\\.bin',
+        shell: true
+    };
+    try {
+        var sass = await spawn(tool, ['--version'], options);
+        console.log(`${tool} version using: ${sass.toString()}`);
 
+    } catch (error) {
+        console.log(`${tool} version not installed`);
+        console.log(`installing latest version of ${tool}`);
+
+        //create folder for npm package
+        try {
+            var mkdir = process.execSync('mkdir ' + path);
+        }
+        catch (ex: any) {
+            console.log(ex)
+        }
+        const options2 = {
+            cwd: path,
+            shell: true
+        };
+        try {
+            await spawn(`npm install ${tool}`, options2);
+            console.log(`latest ${tool} installed`);
+        } catch (error) {
+            console.log(`error occurred while trying to install ${tool}`);
+            console.log(error);
+        }
+
+    }
+}
 async function run() {
     try {
 
-        const inputFile: string | undefined = tl.getInput('inputFile');
-        const outputFile: string | undefined = tl.getInput('outputFile');
-        const workingDirectorySass: string | undefined = tl.getInput('workingDirectorySass');
-        const workingDirectoryPrefixer: string | undefined = tl.getInput('workingDirectoryPrefixer');
-        const style: string | undefined = tl.getInput('style');
-        const enableVendorPrefixing: boolean | undefined = tl.getBoolInput('enableVendorPrefixing');
+        let inputFile: string | undefined = tl.getInput('inputFile');
+        let outputFile: string | undefined = tl.getInput('outputFile');
+        let style: string | undefined = tl.getInput('style');
+        let enableVendorPrefixing: boolean | undefined = tl.getBoolInput('enableVendorPrefixing');
 
+        const _baseWorkingDirectory = 'D:\\Sources\\OS\\Agent\\_tools'
+        const _workingDirectorySass: string | undefined = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
+        const _workingDirectoryPrefixer: string | undefined = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';
 
-
+        //tests: remove later
+        inputFile = 'D:\\Sources\\OS\\Agent\\stylesheets\\_base.scss';
+        outputFile = 'D:\\Sources\\OS\\Agent\\stylesheets\\core.css';
+        enableVendorPrefixing=false;
+        //tests
 
         //validations
         if (!inputFile) {
@@ -85,7 +109,12 @@ async function run() {
             tl.setResult(tl.TaskResult.Failed, 'Invalid output location');
             throw new Error('Invalid output location');
         }
-        await compile(inputFile, outputFile, style, enableVendorPrefixing, workingDirectorySass, workingDirectoryPrefixer);
+
+        await installIfNotExists(_baseWorkingDirectory + '\\sass', 'sass');
+        if (enableVendorPrefixing) {
+            await installIfNotExists(_baseWorkingDirectory + '\\autoprefixer', 'autoprefixer-cli');
+        }
+        await compile(inputFile, outputFile, style, enableVendorPrefixing, _workingDirectorySass, _workingDirectoryPrefixer);
 
     }
     catch (err: any) {
