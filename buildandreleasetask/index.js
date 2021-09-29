@@ -26,7 +26,7 @@ function compile(input, output, style, enableVendorPrefixing, workingDirectorySa
         }
         catch (error) {
             console.log(error.stdout.toString());
-            if (error.errorno !== 0) {
+            if (error.stderr) {
                 console.error('sass compilation thrown error');
                 throw new Error(error.stderr.toString());
             }
@@ -52,6 +52,9 @@ function compile(input, output, style, enableVendorPrefixing, workingDirectorySa
         }
     });
 }
+function escapePath(value) {
+    return '"' + value + '"';
+}
 function installIfNotExists(path, tool) {
     return __awaiter(this, void 0, void 0, function* () {
         const options = {
@@ -67,7 +70,7 @@ function installIfNotExists(path, tool) {
             console.log(`installing latest version of ${tool}`);
             //create folder for npm package
             try {
-                var mkdir = process.execSync('mkdir ' + path);
+                var mkdir = process.execSync('mkdir ' + escapePath(path));
             }
             catch (ex) {
                 console.log(ex);
@@ -76,6 +79,7 @@ function installIfNotExists(path, tool) {
                 cwd: path,
                 shell: true
             };
+            console.log(options2);
             try {
                 var install = yield spawn(`npm install ${tool}`, options2);
                 console.log(`latest ${tool} installed`);
@@ -84,6 +88,7 @@ function installIfNotExists(path, tool) {
             catch (error) {
                 console.log(`error occurred while trying to install ${tool}`);
                 console.log(error);
+                throw new Error(error.stderr.toString());
             }
         }
     });
@@ -95,7 +100,8 @@ function run() {
             let outputFile = tl.getInput('outputFile');
             let style = tl.getInput('style');
             let enableVendorPrefixing = tl.getBoolInput('enableVendorPrefixing');
-            const _baseWorkingDirectory = '$(Agent.ToolsDirectory)';
+            const _baseWorkingDirectory = tl.getVariable('Agent.ToolsDirectory');
+            console.log(`using ${_baseWorkingDirectory} as tools directory`);
             const _workingDirectorySass = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
             const _workingDirectoryPrefixer = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';
             // //tests: remove later
