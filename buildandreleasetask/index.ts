@@ -23,7 +23,7 @@ async function compile(input: string,
         console.log(`compiled sass file ${input} to ${output}`);
     } catch (error: any) {
         console.log(error.stdout.toString());
-        if (error.errorno !== 0) {
+        if (error.stderr) {
             console.error('sass compilation thrown error');
             throw new Error(error.stderr.toString());
         }
@@ -48,6 +48,9 @@ async function compile(input: string,
     }
 
 }
+function escapePath(value: string): string {
+    return '"' + value + '"';
+}
 async function installIfNotExists(path: string, tool: string) {
     const options = {
         cwd: path + '\\node_modules\\.bin',
@@ -63,7 +66,7 @@ async function installIfNotExists(path: string, tool: string) {
 
         //create folder for npm package
         try {
-            var mkdir = process.execSync('mkdir ' + path);
+            var mkdir = process.execSync('mkdir ' + escapePath(path));
         }
         catch (ex: any) {
             console.log(ex)
@@ -72,13 +75,15 @@ async function installIfNotExists(path: string, tool: string) {
             cwd: path,
             shell: true
         };
+        console.log(options2);
         try {
-            var install=await spawn(`npm install ${tool}`, options2);
+            var install = await spawn(`npm install ${tool}`, options2);
             console.log(`latest ${tool} installed`);
             console.log(install.toString());
-        } catch (error) {
+        } catch (error: any) {
             console.log(`error occurred while trying to install ${tool}`);
             console.log(error);
+            throw new Error(error.stderr.toString());
         }
 
     }
@@ -91,7 +96,8 @@ async function run() {
         let style: string | undefined = tl.getInput('style');
         let enableVendorPrefixing: boolean | undefined = tl.getBoolInput('enableVendorPrefixing');
 
-        const _baseWorkingDirectory = '$(Agent.ToolsDirectory)'
+        const _baseWorkingDirectory = tl.getVariable('Agent.ToolsDirectory');
+        console.log(`using ${_baseWorkingDirectory} as tools directory`);
         const _workingDirectorySass: string | undefined = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
         const _workingDirectoryPrefixer: string | undefined = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';
 
