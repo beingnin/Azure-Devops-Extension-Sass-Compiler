@@ -1,0 +1,36 @@
+{
+    "manifestVersion": 1,
+    "id": "process-sass-files",
+    "name": "Process sass files",
+    "version": "0.0.5",
+    "publisher": "AdventureWorks",
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],    
+    "description": "Tools for compiling sass to css and add vendor prefixes",
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "icons": {
+        "default": "images/extension-icon.png"        
+    },
+    "files": [
+        {
+            "path": "buildAndReleaseTask"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "process-sass-files",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "buildAndReleaseTask"
+            }
+        }
+    ]
+}
