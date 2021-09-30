@@ -19,12 +19,15 @@ function compile(input, output, style, enableVendorPrefixing, workingDirectorySa
             cwd: workingDirectorySass,
             shell: true
         };
+        input = escapePath(input);
+        output = escapePath(output);
         try {
             const sass = yield spawn("sass", [input, output, (style === 'compressed' ? '--style compressed' : '--style expanded'), '--no-source-map'], options);
             console.log(sass.toString());
             console.log(`compiled sass file ${input} to ${output}`);
         }
         catch (error) {
+            console.log(error);
             console.log(error.stdout.toString());
             if (error.stderr) {
                 console.error('sass compilation thrown error');
@@ -80,7 +83,7 @@ function installIfNotExists(path, tool) {
                 shell: true
             };
             try {
-                var install = yield spawn(`npm install ${tool}`, options2);
+                var install = yield spawn(`npm install`, ['--no-save', tool], options2);
                 console.log(`latest ${tool} installed`);
                 console.log(install.toString());
             }
@@ -99,15 +102,16 @@ function run() {
             let outputFile = tl.getInput('outputFile');
             let style = tl.getInput('style');
             let enableVendorPrefixing = tl.getBoolInput('enableVendorPrefixing');
-            const _baseWorkingDirectory = tl.getVariable('Agent.ToolsDirectory');
-            console.log(`using ${_baseWorkingDirectory} as tools directory`);
-            const _workingDirectorySass = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
-            const _workingDirectoryPrefixer = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';
+            let _baseWorkingDirectory = tl.getVariable('Agent.ToolsDirectory');
             // //tests: remove later
-            // inputFile = 'D:\\Sources\\OS\\Agent\\stylesheets\\_base.scss';
-            // outputFile = 'D:\\Sources\\OS\\Agent\\stylesheets\\core.css';
-            // enableVendorPrefixing=true;
+            inputFile = 'D:\\Sources\\MyAgent\\stylesheets\\_base.scss';
+            outputFile = 'D:\\Sources\\MyAgent\\core.css';
+            enableVendorPrefixing = true;
+            _baseWorkingDirectory = 'D:\\Sources\\MyAgent';
             // //tests
+            let _workingDirectorySass = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
+            let _workingDirectoryPrefixer = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';
+            console.log(`using ${_baseWorkingDirectory} as tools directory`);
             //validations
             if (!inputFile) {
                 tl.setResult(tl.TaskResult.Failed, 'Invalid input file');
