@@ -10,11 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "await-spawn": "^4.0.2",
     "azure-pipelines-task-lib": "^3.1.9"
   },
   "devDependencies": {
     "@types/node": "^16.9.6",
-    "@types/q": "^1.5.5",
-    "await-spawn": "^4.0.2"
+    "@types/q": "^1.5.5"
   }
 }
