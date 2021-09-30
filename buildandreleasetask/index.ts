@@ -21,11 +21,14 @@ async function compile(input: string,
         console.log(sass.toString());
         console.log(`compiled sass file ${input} to ${output}`);
     } catch (error: any) {
-        console.log(error);
-        console.log(error.stdout.toString());
+        console.log('sass compilation thrown error');
         if (error.stderr) {
-            console.error('sass compilation thrown error');
+            console.log(error.stdout.toString());
             throw new Error(error.stderr.toString());
+        }
+        else {
+            console.log(error);
+            throw new Error(error.toString());
         }
     }
     //add vendor prefixes if asked by user
@@ -39,10 +42,14 @@ async function compile(input: string,
             console.log(prefixer.toString());
             console.log(`vendor prefixes added in ${output}`);
         } catch (error: any) {
-            console.log(error.stdout.toString());
-            if (error.errorno !== 0) {
-                console.error('vendor prefixing thrown error');
+            console.log('vendor prefixing thrown error');
+            if (error.stderr) {
+                console.log(error.stdout.toString());
                 throw new Error(error.stderr.toString());
+            }
+            else {
+                console.log(error);
+                throw new Error(error.toString());
             }
         }
     }
@@ -69,7 +76,7 @@ async function installIfNotExists(path: string, tool: string) {
             var mkdir = process.execSync('mkdir ' + escapePath(path));
         }
         catch (ex: any) {
-            console.log(ex)
+            console.log(ex.toString());
         }
         const options2 = {
             cwd: path,
@@ -81,8 +88,13 @@ async function installIfNotExists(path: string, tool: string) {
             console.log(install.toString());
         } catch (error: any) {
             console.log(`error occurred while trying to install ${tool}`);
-            console.log(error);
-            throw new Error(error.stderr.toString());
+            if (error.stderr) {
+                throw new Error(error.stderr.toString());
+            }
+            else {
+                console.log(error);
+                throw new Error(error.toString());
+            }
         }
 
     }
@@ -96,16 +108,16 @@ async function run() {
         let enableVendorPrefixing: boolean | undefined = tl.getBoolInput('enableVendorPrefixing');
 
         let _baseWorkingDirectory = tl.getVariable('Agent.ToolsDirectory');
-        
-        
+
+
         // //tests: remove later
         // inputFile = 'D:\\Sources\\My Agent\\stylesheets\\_base.scss';
-        // outputFile = 'D:\\Sources\\My Agent\\core.css';
+        // outputFile = 'Z:\\Sources\\My Agent\\core.css';
         // enableVendorPrefixing = true;
         // _baseWorkingDirectory = 'D:\\Sources\\MyAgent';
         // //tests
-        
-        
+
+
         let _workingDirectorySass: string | undefined = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
         let _workingDirectoryPrefixer: string | undefined = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';
         console.log(`using ${_baseWorkingDirectory} as tools directory`);
