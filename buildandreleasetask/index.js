@@ -79,7 +79,6 @@ function installIfNotExists(path, tool) {
                 cwd: path,
                 shell: true
             };
-            console.log(options2);
             try {
                 var install = yield spawn(`npm install ${tool}`, options2);
                 console.log(`latest ${tool} installed`);

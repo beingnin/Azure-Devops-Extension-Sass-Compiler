@@ -75,7 +75,6 @@ async function installIfNotExists(path: string, tool: string) {
             cwd: path,
             shell: true
         };
-        console.log(options2);
         try {
             var install = await spawn(`npm install ${tool}`, options2);
             console.log(`latest ${tool} installed`);
