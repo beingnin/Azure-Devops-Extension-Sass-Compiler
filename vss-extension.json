@@ -2,8 +2,8 @@
     "manifestVersion": 1,
     "id": "process-sass-files",
     "name": "Process sass files",
-    "version": "0.0.7",
-    "publisher": "AdventureWorks",
+    "version": "0.0.9",
+    "publisher": "beingnin",
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
@@ -13,9 +13,26 @@
     "categories": [
         "Azure Pipelines"
     ],
+    "tags":["sass","scss","css", "compile css","compile sass","precompile","postcompile"],
     "icons": {
         "default": "images/extension-icon.png"        
     },
+    "content": {
+        "details": {
+            "path": "overview.md"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "uri": "https://github.com/beingnin/Azure-Devops-Extension-Sass-Compiler"
+    },
+    "branding": {
+        "color": "rgb(217, 26, 134)",
+        "theme": "light"
+    },    
+    "galleryFlags": [
+        "Public","Preview"
+    ],    
     "files": [
         {
             "path": "buildAndReleaseTask"

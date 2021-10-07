@@ -10,7 +10,7 @@
     "version": {
         "Major": 0,
         "Minor": 0,
-        "Patch": 7
+        "Patch": 9
     },
     "instanceNameFormat": "Compile sass",
     "groups": [
@@ -27,7 +27,7 @@
             "label": "Full path of the sass file",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "You can use pipeline variables in here. For example: **$(Build.SourcesDirectory)\\content\\styles\theme.scss**"
+            "helpMarkDown": "You can use pipeline variables in here. For example: **$(Build.SourcesDirectory)\\content\\styles\\theme.scss**"
         },
         {
             "name": "outputFile",
