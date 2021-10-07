@@ -10,7 +10,7 @@ This extension can be used to compile sass files and also add vendor prefixes to
 
 ## Configure
 
-As already said you can use `Process-sass-files` with any kind of pipeline i.e., CI or CD pipelines; and that too with modern YAML code or classic UI. For the sake of demo I will be only using YAML configuration as I think figuring out YAML will help to configure with classic UI as well
+As already said you can use `Process-sass-files` with any kind of pipeline i.e., CI or CD pipelines; and that too with modern YAML code or classic UI. For the sake of demo I will be only using YAML configuration as I think, figuring out YAML will help to configure with classic UI as well
 |  **Argument**|  **Type**| **Description** |
 |--|--|--|
 |  inputFile|  string|  Location of the sass file which need to be compiled to css|
