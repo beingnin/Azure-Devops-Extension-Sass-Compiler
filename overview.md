@@ -30,6 +30,6 @@ As already said you can use `Process-sass-files` with any kind of pipeline i.e.,
     enableVendorPrefixing: true
 ```
 ## Tools used
- There are two tools used by `Process-sass-files` task internally to complete the functionalities. It will install the latest `sass` compiler and `autoprefixer-cli` from npm registry into the tools directory of the pipeline agent. Once installed the task will cache them for future uses.
+ There are two tools used by `Process-sass-files` task internally to complete the functionalities. It will install the latest `sass` compiler and `autoprefixer-cli` from npm registry into the tools directory of the pipeline agent. Once installed the task will cache them for future uses. For this reason alone the pipeline agent should have access to the internet
 
 <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
