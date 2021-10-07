@@ -15,7 +15,7 @@ As already said you can use `Process-sass-files` with any kind of pipeline i.e.,
 |--|--|--|
 |  inputFile|  string|  Location of the sass file which need to be compiled to css|
 |  outputFile|  string|  Location where the compiled css to be kept|
-|  style|  option|  either `expanded` or `compressed`. If selected `compressed`, the compiled css will be minified. Otherwise left intact|
+|  style|  option|  Either `expanded` or `compressed`. If selected `compressed`, the compiled css will be minified. Otherwise left intact|
 |  enableVendorPrefixing|  boolean|  If `true` vendor prefixes will be added to the compiled css|
 
 ## Example
