@@ -6,7 +6,7 @@ This extension can be used to compile sass files and also add vendor prefixes to
 
 `Node` and `npm` are required to be preinstalled in the machine where the Azure Pipelines agent resides. `Npm` is used by the task to install necessary softwares into the agent to process sass files. The `npm` command utility also need to be accessible globally in the machine i.e., the path where it is installed should be added to the `Path` system variable. This will automatically be taken care of if you install node from the [node installer](https://nodejs.org/en/download/).
 
-> **Note**: Currently this extension has been only tested in windows based Azure Pipelines agents.
+> **Note**: Currently this extension has been only tested in windows-based Azure Pipelines agents.
 
 ## Configure
 
