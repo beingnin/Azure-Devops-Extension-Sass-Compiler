@@ -24,6 +24,8 @@ jobs:
 
     - name: Build
       run: |
-        cd buildandreleasetask
+        cd buildandreleasetask        
         npm install
+        npm install typescript -g
+        tsc
         node index.js
