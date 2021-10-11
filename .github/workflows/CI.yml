@@ -24,7 +24,7 @@ jobs:
 
     - name: Build
       run: |
-        cdsss buildandreleasetask        
+        cd buildandreleasetask        
         npm install
         npm install typescript -g
         tsc
