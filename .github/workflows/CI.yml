@@ -25,4 +25,4 @@ jobs:
     - name: Build
       run: |
         npm install
-        node buildandreleasetask\\index.js
+        node buildandreleasetask/index.js
