@@ -11,7 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const tl = require("azure-pipelines-task-lib/task");
 const process = require("child_process");
+const semver = require("semver");
 const spawn = require("await-spawn");
+const regex = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/g;
 function compile(input, output, style, enableVendorPrefixing, workingDirectorySass, workingDirectoryPrefixer) {
     return __awaiter(this, void 0, void 0, function* () {
         //compile sass
@@ -65,15 +67,26 @@ function compile(input, output, style, enableVendorPrefixing, workingDirectorySa
 function escapePath(value) {
     return '"' + value + '"';
 }
-function installIfNotExists(path, tool) {
+function installIfNotExists(path, tool, version) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (!version) {
+            version = 'latest';
+        }
         const options = {
             cwd: path + '\\node_modules\\.bin',
             shell: true
         };
         try {
-            var sass = yield spawn(tool, ['--version'], options);
-            console.log(`${tool} version using: ${sass.toString()}`);
+            let versionFinder = yield spawn('npm', ['list', tool], options);
+            let current = versionFinder.toString().match(regex)[0];
+            let getVersions = yield spawn('npm', ['view', tool, 'versions'], options);
+            let allVersions = getVersions.toString().match(regex);
+            version = semver.maxSatisfying(allVersions, version === 'latest' ? '' : version);
+            console.log(`The current installed version for ${tool} is ${current}`);
+            console.log(`The highest available version wrt the provided version range for ${tool} is ${version}`);
+            if (!semver.eq(current, version)) {
+                throw new Error('Current installed version doesn\'t match the latest specified version range');
+            }
         }
         catch (error) {
             console.log(`${tool} version not installed`);
@@ -90,8 +103,8 @@ function installIfNotExists(path, tool) {
                 shell: true
             };
             try {
-                var install = yield spawn(`npm install`, ['--no-save', tool], options2);
-                console.log(`latest ${tool} installed`);
+                var install = yield spawn(`npm install ${tool}@${version}`, ['--no-save'], options2);
+                console.log(`${tool}@${version} installed`);
                 console.log(install.toString());
             }
             catch (error) {
@@ -112,14 +125,17 @@ function run() {
         try {
             let inputFile = tl.getInput('inputFile');
             let outputFile = tl.getInput('outputFile');
+            let sassVersion = tl.getInput('sassVersion');
+            let autoprefixerVersion = tl.getInput('autoprefixerVersion');
             let style = tl.getInput('style');
             let enableVendorPrefixing = tl.getBoolInput('enableVendorPrefixing');
             let _baseWorkingDirectory = tl.getVariable('Agent.ToolsDirectory');
             // //tests: remove later
-            // inputFile = 'D:\\Sources\\My Agent\\stylesheets\\_base.scss';
-            // outputFile = 'Z:\\Sources\\My Agent\\core.css';
-            // enableVendorPrefixing = true;
-            // _baseWorkingDirectory = 'D:\\Sources\\MyAgent';
+            inputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_base.scss';
+            outputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_compiled.css';
+            enableVendorPrefixing = false;
+            _baseWorkingDirectory = 'D:\\Sources\\My Agent';
+            sassVersion = '1.25.x';
             // //tests
             let _workingDirectorySass = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
             let _workingDirectoryPrefixer = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';
@@ -133,9 +149,9 @@ function run() {
                 tl.setResult(tl.TaskResult.Failed, 'Invalid output location');
                 throw new Error('Invalid output location');
             }
-            yield installIfNotExists(_baseWorkingDirectory + '\\sass', 'sass');
+            yield installIfNotExists(_baseWorkingDirectory + '\\sass', 'sass', sassVersion);
             if (enableVendorPrefixing) {
-                yield installIfNotExists(_baseWorkingDirectory + '\\autoprefixer', 'autoprefixer-cli');
+                yield installIfNotExists(_baseWorkingDirectory + '\\autoprefixer', 'autoprefixer-cli', autoprefixerVersion);
             }
             yield compile(inputFile, outputFile, style, enableVendorPrefixing, _workingDirectorySass, _workingDirectoryPrefixer);
         }

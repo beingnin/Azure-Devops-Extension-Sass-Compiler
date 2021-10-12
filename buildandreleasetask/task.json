@@ -58,6 +58,22 @@
             "required": true,
             "groupName": "advanced",
             "helpMarkDown": "If checked vendor prefixes will be added to the compiled css"
+        },
+        {
+            "name": "sassVersion",
+            "type": "string",
+            "label": "Sass version to use",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "Examples: **1.1.x**, **2.x.x**, **1.2.3**. Leave as empty to use the latest version"
+        },
+        {
+            "name": "autoprefixerversion",
+            "type": "string",
+            "label": "Autoprefixer-cli version to use",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "Examples: **1.1.x**, **2.x.x**, **1.2.3**. Leave as empty to use the latest version"
         }
     ],
     "execution": {

@@ -1,6 +1,9 @@
 import tl = require('azure-pipelines-task-lib/task');
 import process = require("child_process");
+import { version } from 'punycode';
+const semver = require("semver");
 const spawn = require("await-spawn");
+const regex=/(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/g;
 
 async function compile(input: string,
     output: string,
@@ -58,18 +61,30 @@ async function compile(input: string,
 function escapePath(value: string): string {
     return '"' + value + '"';
 }
-async function installIfNotExists(path: string, tool: string) {
+async function installIfNotExists(path: string, tool: string, version: string | undefined) {
+
+    if (!version) {
+        version = 'latest';
+    }
+
     const options = {
         cwd: path + '\\node_modules\\.bin',
         shell: true
     };
     try {
-        var sass = await spawn(tool, ['--version'], options);
-        console.log(`${tool} version using: ${sass.toString()}`);
+        let versionFinder = await spawn('npm', ['list', tool], options);
+        let current: string | undefined = versionFinder.toString().match(regex)[0];
+        let getVersions = await spawn('npm', ['view', tool,'versions'],options);
+        let allVersions: string | undefined = getVersions.toString().match(regex);
+        version = semver.maxSatisfying(allVersions,version==='latest'?'':version);
+        console.log(`The current installed version for ${tool} is ${current}`);
+        console.log(`The highest available version wrt the provided version range for ${tool} is ${version}`);
+        if (!semver.eq(current, version)) {
+            throw new Error('Current installed version doesn\'t match the latest specified version range');
+        }
 
     } catch (error) {
-        console.log(`${tool} version not installed`);
-        console.log(`installing latest version of ${tool}`);
+        console.log(`installing ${version} version of ${tool}`);
 
         //create folder for npm package
         try {
@@ -83,8 +98,8 @@ async function installIfNotExists(path: string, tool: string) {
             shell: true
         };
         try {
-            var install = await spawn(`npm install`, ['--no-save', tool], options2);
-            console.log(`latest ${tool} installed`);
+            var install = await spawn(`npm install ${tool}@${version}`, ['--no-save'], options2);
+            console.log(`${tool}@${version} installed`);
             console.log(install.toString());
         } catch (error: any) {
             console.log(`error occurred while trying to install ${tool}`);
@@ -104,6 +119,8 @@ async function run() {
 
         let inputFile: string | undefined = tl.getInput('inputFile');
         let outputFile: string | undefined = tl.getInput('outputFile');
+        let sassVersion: string | undefined = tl.getInput('sassVersion');
+        let autoprefixerVersion: string | undefined = tl.getInput('autoprefixerVersion');
         let style: string | undefined = tl.getInput('style');
         let enableVendorPrefixing: boolean | undefined = tl.getBoolInput('enableVendorPrefixing');
 
@@ -111,10 +128,11 @@ async function run() {
 
 
         // //tests: remove later
-        // inputFile = 'D:\\Sources\\My Agent\\stylesheets\\_base.scss';
-        // outputFile = 'Z:\\Sources\\My Agent\\core.css';
-        // enableVendorPrefixing = true;
-        // _baseWorkingDirectory = 'D:\\Sources\\MyAgent';
+        inputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_base.scss';
+        outputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_compiled.css';
+        enableVendorPrefixing = true;
+        _baseWorkingDirectory = 'D:\\Sources\\My Agent';
+        sassVersion='1.39.x';
         // //tests
 
 
@@ -132,9 +150,9 @@ async function run() {
             throw new Error('Invalid output location');
         }
 
-        await installIfNotExists(_baseWorkingDirectory + '\\sass', 'sass');
+        await installIfNotExists(_baseWorkingDirectory + '\\sass', 'sass', sassVersion);
         if (enableVendorPrefixing) {
-            await installIfNotExists(_baseWorkingDirectory + '\\autoprefixer', 'autoprefixer-cli');
+            await installIfNotExists(_baseWorkingDirectory + '\\autoprefixer', 'autoprefixer-cli', autoprefixerVersion);
         }
         await compile(inputFile, outputFile, style, enableVendorPrefixing, _workingDirectorySass, _workingDirectoryPrefixer);
 
