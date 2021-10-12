@@ -89,8 +89,7 @@ function installIfNotExists(path, tool, version) {
             }
         }
         catch (error) {
-            console.log(`${tool} version not installed`);
-            console.log(`installing latest version of ${tool}`);
+            console.log(`installing ${version} version of ${tool}`);
             //create folder for npm package
             try {
                 var mkdir = process.execSync('mkdir ' + escapePath(path));
@@ -133,9 +132,10 @@ function run() {
             // //tests: remove later
             inputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_base.scss';
             outputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_compiled.css';
-            enableVendorPrefixing = false;
+            enableVendorPrefixing = true;
             _baseWorkingDirectory = 'D:\\Sources\\My Agent';
-            sassVersion = '1.25.x';
+            sassVersion = '1.39.x';
+            style = 'compressed';
             // //tests
             let _workingDirectorySass = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
             let _workingDirectoryPrefixer = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';

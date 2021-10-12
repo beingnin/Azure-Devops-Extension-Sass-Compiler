@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "process-sass-files",
     "name": "Process sass files",
-    "version": "0.0.9",
+    "version": "0.1.0",
     "publisher": "beingnin",
     "targets": [
         {
