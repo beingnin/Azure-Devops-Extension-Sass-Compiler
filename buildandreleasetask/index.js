@@ -130,12 +130,12 @@ function run() {
             let enableVendorPrefixing = tl.getBoolInput('enableVendorPrefixing');
             let _baseWorkingDirectory = tl.getVariable('Agent.ToolsDirectory');
             // //tests: remove later
-            inputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_base.scss';
-            outputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_compiled.css';
-            enableVendorPrefixing = true;
-            _baseWorkingDirectory = 'D:\\Sources\\My Agent';
-            sassVersion = '1.39.x';
-            style = 'compressed';
+            // inputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_base.scss';
+            // outputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_compiled.css';
+            // enableVendorPrefixing = true;
+            // _baseWorkingDirectory = 'D:\\Sources\\My Agent';
+            // sassVersion='1.39.x';
+            // style = 'compressed';
             // //tests
             let _workingDirectorySass = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
             let _workingDirectoryPrefixer = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';
