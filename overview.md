@@ -20,8 +20,10 @@ As already said you can use `Process-sass-files` with any kind of pipeline i.e.,
 |  outputFile|  string|  Location where the compiled css to be kept|
 |  style|  option|  Either `expanded` or `compressed`. If selected `compressed`, the compiled css will be minified. Otherwise left intact|
 |  enableVendorPrefixing|  boolean|  If `true` vendor prefixes will be added to the compiled css|
+|  sassVersion|  string|  Version of the sass compiler to be used. Leave if you want the latest version to be used|
+|  autoprefixerVersion|  string|  Version of the autoprefixer-cli to be used. Leave if you want the latest version to be used|
 
-## Example
+## Simple Example
 
 ```
 - task: process-sass-files@0
@@ -32,7 +34,19 @@ As already said you can use `Process-sass-files` with any kind of pipeline i.e.,
     style: 'compressed'
     enableVendorPrefixing: true
 ```
+## Example with version
+
+```
+- task: process-sass-files@0
+  displayName: 'Compile sass'
+  inputs:
+    inputFile: '$(Build.SourcesDirectory)\Foo\Content\stylesheets\_base.scss'
+    outputFile: '$(Build.SourcesDirectory)\Foo\Content\stylesheets\core.css'
+    style: 'compressed'
+    enableVendorPrefixing: true,
+    sassVersion: '1.39.x'
+```
 ## Tools used
- There are two tools used by `Process-sass-files` task internally to complete the functionalities. It will install the latest `sass` compiler and `autoprefixer-cli` from npm registry into the tools directory of the pipeline agent. Once installed the task will cache them for future uses. For this reason alone the pipeline agent should have access to the internet at least for the first run.
+ There are two tools used by `Process-sass-files` task internally to complete the functionalities. It will install the latest [sass](https://www.npmjs.com/package/sass) compiler and [autoprefixer-cli](https://www.npmjs.com/package/autoprefixer-cli) from npm registry into the tools directory of the pipeline agent if version is not explicitly specified. Once installed the task will cache them for future uses until a newer version is available to install. The task looks for newer available version of the tools in each run. For this reason alone the pipeline agent should have access to the internet for all the runs.
 
 <div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
