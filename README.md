@@ -1,4 +1,4 @@
-# Process Sass Files [![CI](https://github.com/beingnin/Azure-Devops-Extension-Sass-Compiler/actions/workflows/CI.yml/badge.svg)](https://github.com/beingnin/Azure-Devops-Extension-Sass-Compiler/actions/workflows/CI.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![rating](https://img.shields.io/visual-studio-marketplace/stars/beingnin.process-sass-files) ![installs](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/beingnin.process-sass-files)
+# Process Sass Files [![CI](https://github.com/beingnin/Azure-Devops-Extension-Sass-Compiler/actions/workflows/CI.yml/badge.svg)](https://github.com/beingnin/Azure-Devops-Extension-Sass-Compiler/actions/workflows/CI.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Rating](https://img.shields.io/visual-studio-marketplace/stars/beingnin.process-sass-files?label=Rating) ![installs](https://img.shields.io/visual-studio-marketplace/azure-devops/installs/total/beingnin.process-sass-files?label=Installs)
 
 
 
