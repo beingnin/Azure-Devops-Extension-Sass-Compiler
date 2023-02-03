@@ -14,7 +14,7 @@ const process = require("child_process");
 const semver = require("semver");
 const spawn = require("await-spawn");
 const regex = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/g;
-function compile(input, output, style, enableVendorPrefixing, workingDirectorySass, workingDirectoryPrefixer) {
+function compile(input, output, style, enableVendorPrefixing, generateSourceMap, workingDirectorySass, workingDirectoryPrefixer) {
     return __awaiter(this, void 0, void 0, function* () {
         //compile sass
         const options = {
@@ -24,7 +24,7 @@ function compile(input, output, style, enableVendorPrefixing, workingDirectorySa
         input = escapePath(input);
         output = escapePath(output);
         try {
-            const sass = yield spawn("sass", [input, output, (style === 'compressed' ? '--style compressed' : '--style expanded'), '--no-source-map'], options);
+            const sass = yield spawn("sass", [input, output, (style === 'compressed' ? '--style compressed' : '--style expanded'), generateSourceMap ? '' : '--no-source-map'], options);
             console.log(sass.toString());
             console.log(`compiled sass file ${input} to ${output}`);
         }
@@ -128,14 +128,16 @@ function run() {
             let autoprefixerVersion = tl.getInput('autoprefixerVersion');
             let style = tl.getInput('style');
             let enableVendorPrefixing = tl.getBoolInput('enableVendorPrefixing');
+            let generateSourceMap = tl.getBoolInput('generateSourceMap');
             let _baseWorkingDirectory = tl.getVariable('Agent.ToolsDirectory');
-            // //tests: remove later
-            // inputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_base.scss';
-            // outputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_compiled.css';
-            // enableVendorPrefixing = true;
-            // _baseWorkingDirectory = 'D:\\Sources\\My Agent';
-            // sassVersion='1.39.x';
-            // style = 'compressed';
+            //tests: remove later
+            inputFile = 'D:\\Sample\\sample.scss';
+            outputFile = 'D:\\Sample\\sample.css';
+            enableVendorPrefixing = true;
+            _baseWorkingDirectory = 'D:\\Sources\\My Agent';
+            sassVersion = '1.39.x';
+            style = 'compressed';
+            generateSourceMap = false;
             // //tests
             let _workingDirectorySass = _baseWorkingDirectory + '\\sass\\node_modules\\.bin';
             let _workingDirectoryPrefixer = _baseWorkingDirectory + '\\autoprefixer\\node_modules\\.bin';
@@ -153,7 +155,7 @@ function run() {
             if (enableVendorPrefixing) {
                 yield installIfNotExists(_baseWorkingDirectory + '\\autoprefixer', 'autoprefixer-cli', autoprefixerVersion);
             }
-            yield compile(inputFile, outputFile, style, enableVendorPrefixing, _workingDirectorySass, _workingDirectoryPrefixer);
+            yield compile(inputFile, outputFile, style, enableVendorPrefixing, generateSourceMap, _workingDirectorySass, _workingDirectoryPrefixer);
         }
         catch (err) {
             tl.setResult(tl.TaskResult.Failed, err.message);

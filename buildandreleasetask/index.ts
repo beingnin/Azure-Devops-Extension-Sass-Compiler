@@ -3,12 +3,13 @@ import process = require("child_process");
 import { version } from 'punycode';
 const semver = require("semver");
 const spawn = require("await-spawn");
-const regex=/(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/g;
+const regex = /(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?/g;
 
 async function compile(input: string,
     output: string,
     style: string | undefined,
     enableVendorPrefixing: boolean,
+    generateSourceMap: boolean,
     workingDirectorySass: string | undefined,
     workingDirectoryPrefixer: string | undefined) {
 
@@ -20,7 +21,7 @@ async function compile(input: string,
     input = escapePath(input);
     output = escapePath(output);
     try {
-        const sass = await spawn("sass", [input, output, (style === 'compressed' ? '--style compressed' : '--style expanded'), '--no-source-map'], options);
+        const sass = await spawn("sass", [input, output, (style === 'compressed' ? '--style compressed' : '--style expanded'), generateSourceMap ? '' : '--no-source-map'], options);
         console.log(sass.toString());
         console.log(`compiled sass file ${input} to ${output}`);
     } catch (error: any) {
@@ -74,9 +75,9 @@ async function installIfNotExists(path: string, tool: string, version: string | 
     try {
         let versionFinder = await spawn('npm', ['list', tool], options);
         let current: string | undefined = versionFinder.toString().match(regex)[0];
-        let getVersions = await spawn('npm', ['view', tool,'versions'],options);
+        let getVersions = await spawn('npm', ['view', tool, 'versions'], options);
         let allVersions: string | undefined = getVersions.toString().match(regex);
-        version = semver.maxSatisfying(allVersions,version==='latest'?'':version);
+        version = semver.maxSatisfying(allVersions, version === 'latest' ? '' : version);
         console.log(`The current installed version for ${tool} is ${current}`);
         console.log(`The highest available version wrt the provided version range for ${tool} is ${version}`);
         if (!semver.eq(current, version)) {
@@ -123,17 +124,19 @@ async function run() {
         let autoprefixerVersion: string | undefined = tl.getInput('autoprefixerVersion');
         let style: string | undefined = tl.getInput('style');
         let enableVendorPrefixing: boolean | undefined = tl.getBoolInput('enableVendorPrefixing');
+        let generateSourceMap: boolean | undefined = tl.getBoolInput('generateSourceMap');
 
         let _baseWorkingDirectory = tl.getVariable('Agent.ToolsDirectory');
 
 
-        // //tests: remove later
-        // inputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_base.scss';
-        // outputFile = 'D:\\Sources\\ADS\\SPSA\\SHJP.Egate\\EGATE\\EgateContent\\Styles\\stylesheets\\_compiled.css';
+        //tests: remove later
+        // inputFile = 'D:\\Sample\\sample.scss';
+        // outputFile = 'D:\\Sample\\sample.css';
         // enableVendorPrefixing = true;
         // _baseWorkingDirectory = 'D:\\Sources\\My Agent';
-        // sassVersion='1.39.x';
+        // sassVersion = '1.39.x';
         // style = 'compressed';
+        // generateSourceMap = false;
         // //tests
 
 
@@ -155,7 +158,7 @@ async function run() {
         if (enableVendorPrefixing) {
             await installIfNotExists(_baseWorkingDirectory + '\\autoprefixer', 'autoprefixer-cli', autoprefixerVersion);
         }
-        await compile(inputFile, outputFile, style, enableVendorPrefixing, _workingDirectorySass, _workingDirectoryPrefixer);
+        await compile(inputFile, outputFile, style, enableVendorPrefixing, generateSourceMap, _workingDirectorySass, _workingDirectoryPrefixer);
 
     }
     catch (err: any) {

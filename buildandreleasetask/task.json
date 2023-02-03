@@ -60,11 +60,21 @@
             "helpMarkDown": "If checked vendor prefixes will be added to the compiled css"
         },
         {
+            "name": "generateSourceMap",
+            "type": "boolean",
+            "label": "Generate Source Maps",
+            "defaultValue": false,
+            "required": true,
+            "groupName": "advanced",
+            "helpMarkDown": "If checked source maps will also be generated"
+        },
+        {
             "name": "sassVersion",
             "type": "string",
             "label": "Sass version to use",
             "defaultValue": "",
             "required": false,
+            "groupName": "advanced",
             "helpMarkDown": "Examples: **1.1.x**, **2.x.x**, **1.2.3**. Leave as empty to use the latest version"
         },
         {
@@ -73,6 +83,7 @@
             "label": "Autoprefixer-cli version to use",
             "defaultValue": "",
             "required": false,
+            "groupName": "advanced",
             "helpMarkDown": "Examples: **1.1.x**, **2.x.x**, **1.2.3**. Leave as empty to use the latest version"
         }
     ],
