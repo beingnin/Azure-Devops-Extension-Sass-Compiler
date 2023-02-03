@@ -20,6 +20,7 @@ As already said you can use `Process-sass-files` with any kind of pipeline i.e.,
 |  outputFile|  string|  Location where the compiled css to be kept|
 |  style|  option|  Either `expanded` or `compressed`. If selected `compressed`, the compiled css will be minified. Otherwise left intact|
 |  enableVendorPrefixing|  boolean|  If `true` vendor prefixes will be added to the compiled css|
+|  generateSourceMap|  boolean|  If `true` source maps will also be generated|
 |  sassVersion|  string|  Version of the sass compiler to be used. Leave if you want the latest version to be used|
 |  autoprefixerVersion|  string|  Version of the autoprefixer-cli to be used. Leave if you want the latest version to be used|
 
@@ -33,6 +34,7 @@ As already said you can use `Process-sass-files` with any kind of pipeline i.e.,
     outputFile: '$(Build.SourcesDirectory)\Foo\Content\stylesheets\core.css'
     style: 'compressed'
     enableVendorPrefixing: true
+    generateSourceMap: false
 ```
 ## Example with version
 
@@ -43,6 +45,7 @@ As already said you can use `Process-sass-files` with any kind of pipeline i.e.,
     inputFile: '$(Build.SourcesDirectory)\Foo\Content\stylesheets\_base.scss'
     outputFile: '$(Build.SourcesDirectory)\Foo\Content\stylesheets\core.css'
     style: 'compressed'
+    generateSourceMap: true
     enableVendorPrefixing: true,
     sassVersion: '1.39.x'
 ```
