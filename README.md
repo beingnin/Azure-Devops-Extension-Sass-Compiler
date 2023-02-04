@@ -7,3 +7,10 @@ This extension can be used to compile sass files and also add vendor prefixes to
 [Read overview.MD for usage and prerequisites](https://github.com/beingnin/Azure-Devops-Extension-Sass-Compiler/blob/master/overview.md)
 
 [View extension in market place](https://marketplace.visualstudio.com/items?itemName=beingnin.process-sass-files&ssr=false#overview)
+
+# Release Notes
+
+### v0.2.1
+
+- Added new argument for generating source-maps while compiling sass files to css
+- Moved version choosing arguments to Advanced group 
